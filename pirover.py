@@ -7,7 +7,7 @@
 # Raspberry Pi Rover
 #  motor -- using WiringPi2 (GPIO-connected, check following pin connections).
 #  camera -- using takephoto script.
-from rsserver import RemoteSensorServer
+from rsp_server.rsserver import RemoteSensorServer
 from twowheelscar import TwoWheelsCar
 import wiringpi as wp
 import commands
@@ -18,7 +18,7 @@ MOTOR_IN2A = 4 # WiringPi2 GPIO pin #
 MOTOR_IN2B = 0 # WiringPi2 GPIO pin #
 
 class GpioTwoWheels(object):
-    def setup(self):
+    def __init__(self):
         wp.wiringPiSetup()
         wp.softPwmCreate(MOTOR_IN1A,0,100)
         wp.softPwmCreate(MOTOR_IN1B,0,100)

@@ -21,7 +21,7 @@ GPIOMODE_OUT=1
 GPIOMODE_PWM=2
 
 class GpioSteering(object):
-    def setup(self):
+    def __init__(self):
         wp.wiringPiSetupGpio()
         wp.softPwmCreate(MOTOR_PWM, 0, 100)
         wp.pinMode(MOTOR_OUTA, GPIOMODE_OUT)

@@ -20,7 +20,6 @@ class SteeringCar(object):
         self._quit_loop = False
         self._current_power = 0 # private (-100 .. 100)
         self._current_steering = 50 # private (0 .. 100)
-        self.device.setup()
         self.server.set_controller(self)
 
     def start(self):

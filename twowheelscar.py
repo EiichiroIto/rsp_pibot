@@ -1,33 +1,50 @@
+from threading import Thread
 import time
 
 class TwoWheelsCar(object):
     def __init__(self, device, server):
         self.device = device
-        self.server = server
-        self.moving_time = 500 # parameter (ms)
+        self.moving_time = 1000 # parameter (ms)
         self.moving_power = 100 # parameter (-100..100)
         self.balance = 50 # parameter (0..100)
         self.turning_time = 300 # parameter (ms)
-        self.turning_power = 50 # parameter (0..100)
-        self.interval = 200 # parameter (ms)
+        self.turning_power = 100 # parameter (0..100)
+        self.thread_interval = 200 # parameter (ms)
         self.camera_format = "jpg" # "jpg" or "gif" or "png"
-        self.acceleration = 50 # parameter(1..100)
+        self._thread = None
+        self._quit_loop = False
         self._move_timeout = 0 # private
-        self._last_msec = 0 # private
         self._current_left = 0 # private
         self._current_right = 0 # private
         self._target_left = 0 # private
         self._target_right = 0 # private
+        self.set_server(server)
+
+    def set_server(self, server):
+        self.server = server
+        if self.server is not None:
+            self.server.set_controller(self)
+
+    def start(self):
+        if self._thread is not None:
+            return
+        self._thread = Thread(target=self.timer_thread)
+        self._thread.daemon = False #True
+        self._thread.start()
+
+    def stop(self):
+        self._thread = None
+        time.sleep(self.thread_interval/1000.0)
+        self._quit_loop = True
 
     def motor(self, left, right):
+        if self.device is None:
+            return
         self.device.powerA(left)
         self.device.powerB(right)
 
     def new_current(self, current, target):
-        diff = target - current
-        iabs = int(abs(diff))
-        sign = int(diff) / iabs
-        return current + sign * (iabs if iabs < self.acceleration else self.acceleration)
+        return target
 
     def update_current(self):
         changed = False
@@ -40,20 +57,19 @@ class TwoWheelsCar(object):
         if changed:
             self.motor(self._current_left, self._current_right)
 
-    def spinOnce(self):
-        now = int(time.time()*1000)
-        if now - self._last_msec < self.interval:
-            return
-        self._last_msec = now
-        if self._move_timeout > 0 and now > self._move_timeout:
-            self.stop()
-        self.update_current()
+    def timer_thread(self):
+        while self._thread is not None:
+            now = int(time.time()*1000)
+            if self._move_timeout > 0 and now > self._move_timeout:
+                self.brake()
+            self.update_current()
+            time.sleep(self.thread_interval/1000.0)
 
     def set_target(self, left, right):
         self._target_left = int(left)
         self._target_right = int(right)
 
-    def stop(self):
+    def brake(self):
         self.set_target(0, 0)
         self._move_timeout = 0
 
@@ -101,9 +117,9 @@ class TwoWheelsCar(object):
         elif message == 'right':
             self.right()
         elif message == 'stop':
-            self.stop()
+            self.brake()
         elif message == 'quit':
-            self.stop()
+            self.brake()
             quit()
         else:
             print("broadcast(%s)" % message)
@@ -122,8 +138,6 @@ class TwoWheelsCar(object):
             self.turning_power = min(max(int(val),0),100)
         elif key == 'interval':
             self.interval = min(max(int(val),0),100)
-        elif key == 'acceleration':
-            self.acceleration = min(max(int(val),0),100)
         elif key == 'camera_format':
             if val == 'jpg' or val == 'gif' or val == 'png':
                 self.camera_format = val
