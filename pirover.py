@@ -7,8 +7,8 @@
 # Raspberry Pi Rover
 #  device -- GPIO Two Wheels Car
 from rsp_server.rsserver import RemoteSensorServer
-from twowheelscar import TwoWheelsCar
-from robot.gpiotwowheels import GpioTwoWheels
+from common.twowheelscar import TwoWheelsCar
+from hardware.gpiotwowheels import GpioTwoWheels
 
 if __name__ == '__main__':
     device = GpioTwoWheels()

@@ -47,14 +47,15 @@ class Vehicle(object):
         time.sleep(self.thread_interval/1000.0)
         self._quit_loop = True
 
-    def sensor_update(self, dic):
-        for k in dic:
+    def sensor_update(self, list):
+        for (k,v) in list:
+            print(k)
             key = k.encode('utf-8').replace(' ','').lower()
             if key in self._variables:
-                if type(dic[k]) is unicode:
-                    val = dic[k].encode('utf-8')
+                if type(v) is unicode:
+                    val = v.encode('utf-8')
                 else:
-                    val = str(dic[k])
+                    val = str(v)
                 self._variables[key](val)
             else:
                 print("sensor_update(%s)" % key)

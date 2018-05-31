@@ -7,8 +7,8 @@
 # Raspberry Pi Buggy
 #  device --- GPIO Steering Car
 from rsp_server.rsserver import RemoteSensorServer
-from steeringcar import SteeringCar
-from gpiosteering import GpioSteering
+from common.steeringcar import SteeringCar
+from hardware.gpiosteering import GpioSteering
 
 if __name__ == '__main__':
     device = GpioSteering()
