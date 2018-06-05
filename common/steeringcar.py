@@ -18,7 +18,7 @@ class SteeringCar(Vehicle):
         self.add_handler('left', self.left)
         self.add_handler('right', self.right)
         self.add_handler('stop', self.brake)
-        self.add_variable('power', self.set_moving_time)
+        self.add_variable('power', self.set_target_power)
         self.add_variable('steering', self.set_target_steering)
         self.add_variable('accel_power', self.set_accel_power)
         self.add_variable('accel_steering', self.set_accel_steering)
