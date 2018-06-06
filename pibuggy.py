@@ -9,9 +9,11 @@
 from rsp_server.rsserver import RemoteSensorServer
 from common.steeringcar import SteeringCar
 from hardware.gpiosteering import GpioSteering
+from hardware.ultrasonic import UltraSonic
 
 if __name__ == '__main__':
     device = GpioSteering()
     server = RemoteSensorServer()
     robot = SteeringCar(device=device, server=server)
+    robot.add_sensor('ultrasonic', UltraSonic())
     robot.spin()
